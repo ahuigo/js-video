@@ -61,6 +61,9 @@
     }
 
     const onkeydown=(e)=>{
+        if(e.target.nodeName==='INPUT'){
+            return
+        }
         const v = document.querySelector('#myVideo_html5_api')
         p(e)
         const vplayer = myVideo.player()
