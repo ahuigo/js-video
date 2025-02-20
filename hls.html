@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>M3U8 Player</title>
+    <!-- Include the HLS.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+
+<body>
+    <!-- Create a video tag -->
+    <video id="video" controls></video>
+
+    <script>
+        // Check if HLS is supported by the browser
+        if (Hls.isSupported()) {
+            var video = document.getElementById('video');
+            var hls = new Hls({
+                // loader: Hls.DefaultConfig.loader,
+            });
+            // add signature
+            hls.on(Hls.Events.FRAG_PARSED, function (event, data) {
+                console.log(event, data);
+                console.log(data.frag.url);
+            });
+            hls.on(Hls.Events.FRAG_PARSING_METADATA, function (event, data) {
+                console.log(event, data);
+                console.log(data.frag.url);
+            });
+            hls.on(Hls.Events.FRAG_PARSING_USERDATA, function (event, data) {
+                console.log(event, data);
+
+                data.frag.url += '?signature=123';
+                console.log(data.frag.url);
+            });
+            if (0) {
+                hls.on(Hls.Events.FRAG_LOADING, function (event, data) {
+                    data.frag.url += '?signature=123';
+                    console.log(data.frag.url);
+                });
+            }
+
+            // Load your M3U8 file
+            hls.loadSource('http://m:8901/listen/hls/a.m3u8');
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                video.play();
+            });
+
+        }
+        // If HLS isn't supported natively, fallback to 'direct file playback'
+        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = 'http://m:8901/listen/hls/a.m3u8?a=1';
+            video.addEventListener('loadedmetadata', function () {
+                video.play();
+            });
+        }
+    </script>
+</body>
+
+</html>
